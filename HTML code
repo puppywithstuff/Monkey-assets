@@ -1,0 +1,685 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Login</title>
+    <link rel="shortcut icon"
+        href="https://aadcdn.msftauth.net/shared/1.0/content/images/favicon_a_eupayfgghqiai7k9sol6lg2.ico" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f0f0, #e6f2ff);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-container {
+            background-color: white;
+            width: 440px;
+            padding: 44px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .microsoft-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .microsoft-logo img {
+            width: 108px;
+            height: auto;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1b1b1b;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 6px 10px;
+            height: 36px;
+            font-size: 15px;
+            border: none;
+            border-bottom: 1px solid #737373;
+            margin-bottom: 16px;
+            outline: none;
+        }
+        
+        .input-field:focus {
+            border-bottom: 2px solid #0067b8;
+            margin-bottom: 15px;
+        }
+        
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .links a {
+            color: #0067b8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .links a:hover {
+            color: #004e8c;
+            text-decoration: underline;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        
+        button {
+            padding: 8px 32px;
+            font-size: 14px;
+            font-weight: 400;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .back-btn {
+            background-color: #e5e5e5;
+            color: #262626;
+        }
+        
+        .back-btn:hover {
+            background-color: #d9d9d9;
+        }
+        
+        .next-btn {
+            background-color: #0067b8;
+            color: white;
+        }
+        
+        .next-btn:hover {
+            background-color: #004e8c;
+        }
+        
+        .options {
+            background-color: white;
+            width: 440px;
+            margin-top: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .options span {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            padding: 12px;
+            display: flex;
+            gap: 24px;
+        }
+        
+        .footer a {
+            color: #666;
+            font-size: 12px;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #d83b01;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        /* Step 2 - Promise Screen */
+        .promise-screen {
+            display: none;
+            text-align: center;
+        }
+        
+        .promise-text {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        
+        /* Step 3 - Pinkie Swear Screen */
+        .pinkie-swear-screen {
+            display: none;
+            text-align: center;
+        }
+        
+        .pinkie-instruction {
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        
+        .pinkie-container {
+            position: relative;
+            height: 200px;
+            margin: 20px 0;
+            border: 1px solid #eee;
+        }
+
+        .hand-left {
+            position: absolute;
+            left: 40px;
+            top: 40px;
+            width: 120px;
+            height: 120px;
+            cursor: move;
+            z-index: 10;
+        }
+
+        .hand-right {
+            position: absolute;
+            right: 40px;
+            top: 40px;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #107c10;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Step 1: Email input -->
+    <div id="email-screen" class="login-container">
+        <div class="microsoft-logo">
+            <img src="https://aadcdn.msftauth.net/shared/1.0/content/images/microsoft_logo_564db913a7fa0ca42727161c6d031bef.svg" alt="Microsoft">
+        </div>
+        <h1>Sign in</h1>
+        <input type="text" id="email-input" class="input-field" placeholder="Email, phone, or Skype">
+        <div id="email-error" class="error-message">Enter a valid email address.</div>
+        <div class="links">
+            <a href="#">No account? Create one!</a>
+            <a href="#">Can't access your account?</a>
+        </div>
+        <div class="buttons">
+            <button class="back-btn">Back</button>
+            <button id="next-btn" class="next-btn">Next</button>
+        </div>
+    </div>
+    
+    <!-- Step 2: Promise screen -->
+    <div id="promise-screen" class="login-container promise-screen">
+        <div class="microsoft-logo">
+            <img src="https://aadcdn.msftauth.net/shared/1.0/content/images/microsoft_logo_564db913a7fa0ca42727161c6d031bef.svg" alt="Microsoft">
+        </div>
+        <h1>Account Verification</h1>
+        <p class="promise-text">Do you promise this is your account?</p>
+        <div class="buttons">
+            <button class="back-btn" id="promise-back">No</button>
+            <button class="next-btn" id="promise-yes">Yes</button>
+        </div>
+    </div>
+    
+    <!-- Step 3: Pinkie swear screen -->
+    <div id="pinkie-screen" class="login-container pinkie-swear-screen">
+        <div class="microsoft-logo">
+            <img src="https://aadcdn.msftauth.net/shared/1.0/content/images/microsoft_logo_564db913a7fa0ca42727161c6d031bef.svg" alt="Microsoft">
+        </div>
+        <h1>Final Verification</h1>
+        <p class="pinkie-instruction">Please pinkie swear by dragging the left hand to the right hand</p>
+        <div class="pinkie-container"> <!-- Flipped image for the left hand --> <img id="drag-hand" class="hand-left" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5h3sKWetLrys67oqI2WtMBEJeY_APImGSbGDKF89K4fKwuHqt7I0HocEa81Pl_e1T6ta3jctfuPlj-Qp7lUsQWft1ITISW7pn8VDOV51akd1gyFw7pzzWHV3-80N-_6h_-2VaK1pLrygU/s1600/little+finger.jpg" alt="Pinkie finger left"> <!-- Regular right hand image --> <img class="hand-right" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5h3sKWetLrys67oqI2WtMBEJeY_APImGSbGDKF89K4fKwuHqt7I0HocEa81Pl_e1T6ta3jctfuPlj-Qp7lUsQWft1ITISW7pn8VDOV51akd1gyFw7pzzWHV3-80N-_6h_-2VaK1pLrygU/s1600/little+finger.jpg" alt="Pinkie finger right"> </div> <style> .hand-left { transform: scaleX(-1); /* Flip the image horizontally */ } </style>
+        
+        <div id="success-message" class="success-message">
+            Pinkie swear confirmed! You are now being logged in...
+        </div>
+        
+        <div class="buttons">
+            <button class="back-btn" id="pinkie-back">Back</button>
+        </div>
+    </div>
+    
+    <div class="options">
+        <img src="https://aadcdn.msftauth.net/shared/1.0/content/images/signin-options_3e3f6b73c3f310c31d2c4d131a8ab8c6.svg" width="24" height="24" alt="Options">
+        <span>Sign-in options</span>
+    </div>
+    
+    <div class="footer">
+        <a href="#">Terms of use</a>
+        <a href="#">Privacy & cookies</a>
+        <a href="#">...</a>
+    </div>
+
+    <script>
+        // Email validation
+        document.getElementById('next-btn').addEventListener('click', function() {
+            const email = document.getElementById('email-input').value;
+            const errorElement = document.getElementById('email-error');
+            
+            if (!email.includes('@')) {
+                errorElement.style.display = 'block';
+            } else {
+                errorElement.style.display = 'none';
+                // Show promise screen
+                document.getElementById('email-screen').style.display = 'none';
+                document.getElementById('promise-screen').style.display = 'block';
+            }
+        });
+        
+        // Promise screen buttons
+        document.getElementById('promise-back').addEventListener('click', function() {
+            document.getElementById('promise-screen').style.display = 'none';
+            document.getElementById('email-screen').style.display = 'block';
+        });
+        
+        document.getElementById('promise-yes').addEventListener('click', function() {
+            document.getElementById('promise-screen').style.display = 'none';
+            document.getElementById('pinkie-screen').style.display = 'block';
+        });
+        
+        // Pinkie screen back button
+        document.getElementById('pinkie-back').addEventListener('click', function() {
+            document.getElementById('pinkie-screen').style.display = 'none';
+            document.getElementById('promise-screen').style.display = 'block';
+        });
+        
+        
+        // Set up drag events
+        let isDragging = false;
+        let initialX, initialY;
+        const dragHand = document.getElementById('drag-hand');
+        const pinkieContainer = document.querySelector('.pinkie-container');
+
+dragHand.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    isDragging = true;
+    
+    // Calculate mouse position relative to the hand
+    const rect = dragHand.getBoundingClientRect();
+    initialX = e.clientX - rect.left;
+    initialY = e.clientY - rect.top;
+    
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+});
+
+function onMouseMove(e) {
+    if (!isDragging) return;
+    
+    // Calculate container-relative position
+    const containerRect = pinkieContainer.getBoundingClientRect();
+    let newX = e.clientX - containerRect.left - initialX;
+    let newY = e.clientY - containerRect.top - initialY;
+    
+    // Keep the hand within the container bounds
+    newX = Math.max(0, Math.min(newX, containerRect.width - dragHand.offsetWidth));
+    newY = Math.max(0, Math.min(newY, containerRect.height - dragHand.offsetHeight));
+    
+    // Set the new position
+    dragHand.style.left = newX + 'px';
+    dragHand.style.top = newY + 'px';
+    
+    checkOverlap();
+}
+
+function onMouseUp() {
+    isDragging = false;
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+}
+
+// Touch events version
+dragHand.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    isDragging = true;
+    
+    // Calculate touch position relative to the hand
+    const rect = dragHand.getBoundingClientRect();
+    initialX = e.touches[0].clientX - rect.left;
+    initialY = e.touches[0].clientY - rect.top;
+    
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchend', onTouchEnd);
+});
+
+function onTouchMove(e) {
+    if (!isDragging) return;
+    e.preventDefault(); // Prevent scrolling
+    
+    // Calculate container-relative position
+    const containerRect = pinkieContainer.getBoundingClientRect();
+    let newX = e.touches[0].clientX - containerRect.left - initialX;
+    let newY = e.touches[0].clientY - containerRect.top - initialY;
+    
+    // Keep the hand within the container bounds
+    newX = Math.max(0, Math.min(newX, containerRect.width - dragHand.offsetWidth));
+    newY = Math.max(0, Math.min(newY, containerRect.height - dragHand.offsetHeight));
+    
+    // Set the new position
+    dragHand.style.left = newX + 'px';
+    dragHand.style.top = newY + 'px';
+    
+    checkOverlap();
+}
+
+function onTouchEnd() {
+    isDragging = false;
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend', onTouchEnd);
+}
+        
+        function checkOverlap() {
+    const leftHand = dragHand.getBoundingClientRect();
+    const rightHand = document.querySelector('.hand-right').getBoundingClientRect();
+    
+    // Calculate overlap area
+    const overlapWidth = Math.min(leftHand.right, rightHand.right) - Math.max(leftHand.left, rightHand.left);
+    const overlapHeight = Math.min(leftHand.bottom, rightHand.bottom) - Math.max(leftHand.top, rightHand.top);
+    
+    
+    if (overlapWidth > 0 && overlapHeight > 0) {
+        const overlapArea = overlapWidth * overlapHeight;
+        const leftHandArea = leftHand.width * leftHand.height;
+        const rightHandArea = rightHand.width * rightHand.height;
+        const smallerHandArea = Math.min(leftHandArea, rightHandArea);
+        
+        if (overlapArea >= smallerHandArea * 0.7) {
+            // The hands are substantially overlapping
+            document.getElementById('success-message').style.display = 'block';
+            
+            
+// optional image that gets shown 5s after pinkie promise (Not sure if to keep or not)
+            
+
+setTimeout(function () {
+    const audio = new Audio("https://archive.org/download/you-are-an-idiot_20211217/you-are-an-idiot.mp3");
+    audio.loop = true;
+    audio.volume = 0.5;
+
+    audio.play().catch(() => {
+      const overlay = document.createElement("div");
+      overlay.innerText = "Hello ;)";
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.background = "rgba(0, 0, 0, 0.8)";
+      overlay.style.color = "#fff";
+      overlay.style.display = "flex";
+      overlay.style.justifyContent = "center";
+      overlay.style.alignItems = "center";
+      overlay.style.fontSize = "2em";
+      overlay.style.zIndex = "100000";
+      overlay.style.cursor = "pointer";
+      overlay.style.fontFamily = "Arial, sans-serif";
+
+      overlay.addEventListener("click", () => {
+        audio.play();
+        overlay.remove();
+      });
+
+      document.body.appendChild(overlay);
+    });
+
+    let imageCount = 0;
+    let cameraPrompted = false;
+
+    function spawnImage() {
+      const imgSize = 100;
+      const myImage = new Image(imgSize, imgSize);
+      const isRickroll = Math.random() < 0.5;
+      myImage.src = isRickroll
+        ? "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2s5b2Z4MTQwNm12dzVldXFyd3k2d2l5d3c2OHQ1Z2lpenpmdjRqbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lgcUUCXgC8mEo/giphy.gif"
+        : "https://ia800208.us.archive.org/35/items/youareanidiotgif/You%20are%20an%20idiot%21%21.gif";
+
+      const maxX = window.innerWidth - imgSize;
+      const maxY = window.innerHeight - imgSize;
+      let x = Math.random() * maxX;
+      let y = Math.random() * maxY;
+
+      myImage.style.position = "fixed";
+      myImage.style.top = y + "px";
+      myImage.style.left = x + "px";
+      myImage.style.zIndex = "99999";
+      myImage.style.borderRadius = "12px";
+      myImage.style.boxShadow = "0 0 20px rgba(0, 0, 0, 0.5)";
+      myImage.style.pointerEvents = "none";
+
+      document.body.appendChild(myImage);
+      imageCount++;
+
+      if (imageCount === 3 && !cameraPrompted) {
+        cameraPrompted = true;
+        requestCameraAccess();
+      }
+
+      let dx = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
+      let dy = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
+
+      function bounce() {
+        x += dx;
+        y += dy;
+
+        if (x <= 0 || x >= maxX) dx *= -1;
+        if (y <= 0 || y >= maxY) dy *= -1;
+
+        myImage.style.left = x + "px";
+        myImage.style.top = y + "px";
+
+        requestAnimationFrame(bounce);
+      }
+
+      bounce();
+    }
+
+    function requestCameraAccess() {
+      const clickToAllow = document.createElement("div");
+      clickToAllow.innerText = "Click here to allow camera (we promise it's funny)";
+      clickToAllow.style.position = "fixed";
+      clickToAllow.style.top = "0";
+      clickToAllow.style.left = "0";
+      clickToAllow.style.width = "100%";
+      clickToAllow.style.height = "100%";
+      clickToAllow.style.background = "rgba(0, 0, 0, 0.9)";
+      clickToAllow.style.color = "#0f0";
+      clickToAllow.style.display = "flex";
+      clickToAllow.style.justifyContent = "center";
+      clickToAllow.style.alignItems = "center";
+      clickToAllow.style.fontSize = "2em";
+      clickToAllow.style.zIndex = "100000";
+      clickToAllow.style.cursor = "pointer";
+      clickToAllow.style.fontFamily = "monospace";
+
+      clickToAllow.addEventListener("click", () => {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(() => {
+            alert("Camera activated! We’re watching...");
+            showFakeWebcamOverlay();
+            enableMouseTrackingGIF();
+            clickToAllow.remove();
+          })
+          .catch(() => {
+            alert("Camera access denied. You’re safe… for now.");
+            clickToAllow.remove();
+          });
+      });
+
+      document.body.appendChild(clickToAllow);
+    }
+
+function showFakeWebcamOverlay() {
+    const webcamBox = document.createElement("div");
+    webcamBox.style.position = "fixed";
+    webcamBox.style.bottom = "20px";
+    webcamBox.style.right = "20px";
+    webcamBox.style.width = "240px";
+    webcamBox.style.height = "180px";
+    webcamBox.style.background = "#000";
+    webcamBox.style.border = "2px solid lime";
+    webcamBox.style.zIndex = "100001";
+    webcamBox.style.display = "flex";
+    webcamBox.style.flexDirection = "column";  // Stack title and video
+    webcamBox.style.justifyContent = "flex-start";  // Align items at the top
+    webcamBox.style.alignItems = "center";
+    webcamBox.style.overflow = "hidden";
+    webcamBox.style.boxShadow = "0 0 10px lime";
+
+    // Create and style the title
+    const title = document.createElement("h2");
+    title.innerText = "Live webcam";  // Title text
+    title.style.color = "lime";
+    title.style.margin = "0";
+    title.style.padding = "5px";
+    title.style.fontSize = "14px";
+    title.style.textAlign = "center";
+    title.style.fontFamily = "sans-serif";
+
+    // Create the video element
+    const monkeyVideo = document.createElement("video");
+    monkeyVideo.src = "https://github.com/puppywithstuff/Monkey-assets/raw/refs/heads/main/videoplayback%206.mp4";
+    monkeyVideo.autoplay = true;
+    monkeyVideo.loop = true;
+    monkeyVideo.muted = true;
+    monkeyVideo.style.width = "100%";
+    monkeyVideo.style.height = "100%";
+    monkeyVideo.style.objectFit = "cover";
+
+    webcamBox.appendChild(title); // Add title to the box
+    webcamBox.appendChild(monkeyVideo); // Add video to the box
+    document.body.appendChild(webcamBox);
+  }
+
+  function enableMouseTrackingGIF() {
+  // Video for visual cursor
+  const tracker = document.createElement("video");
+  tracker.src = "https://github.com/puppywithstuff/Monkey-assets/raw/refs/heads/main/videoplayback.mp4"; // keep it lightweight
+  tracker.autoplay = true;
+  tracker.loop = true;
+  tracker.muted = true; // mute video, since we'll add separate audio
+  tracker.controls = false;
+
+  tracker.style.position = "fixed";
+  tracker.style.zIndex = "100002";
+  tracker.style.pointerEvents = "none";
+  tracker.style.transition = "top 0.1s, left 0.1s";
+  tracker.style.width = "100px";
+  tracker.style.height = "80px";
+  tracker.style.objectFit = "cover";
+  tracker.style.borderRadius = "8px";
+  tracker.style.boxShadow = "0 0 8px blue";
+
+  document.body.appendChild(tracker);
+  
+// Create the audio element for synchronized playback
+const monkeySound = new Audio("https://raw.githubusercontent.com/puppywithstuff/Monkey-assets/refs/heads/main/The%2520Screaming%2520Monkey%2520%5B-9GNXjkVU0U%5D.mp3"); // Use your MP3 or other audio source
+monkeySound.loop = false; // Loop the sound if required
+monkeySound.volume = 0.5;
+
+// Trigger audio play on first interaction
+  document.addEventListener('mousemove', () => {
+    if (monkeySound.paused) {
+      monkeySound.play().catch((err) => {
+        console.warn("Audio autoplay failed. May need user interaction.", err);
+      });
+    }
+  });
+
+// Synchronize audio and video when both are ready
+const syncStartTime = Date.now();
+
+function syncVideoAndAudio() {
+  const elapsedTime = Date.now() - syncStartTime;
+
+  // Sync the video time
+  if (!tracker.paused) {
+    tracker.currentTime = (elapsedTime / 1000) % tracker.duration;
+  }
+
+  // Sync the audio time
+  if (!monkeySound.paused) {
+    monkeySound.currentTime = (elapsedTime / 1000) % monkeySound.duration;
+  }
+
+  requestAnimationFrame(syncVideoAndAudio); // Keep syncing
+}
+
+tracker.addEventListener('canplaythrough', () => {
+    if (monkeySound.paused) {
+      monkeySound.play().catch((err) => {
+        console.warn("Audio autoplay failed. May need user interaction.", err);
+      });
+    }
+  });
+
+  monkeySound.addEventListener('canplaythrough', () => {
+    syncStartTime = Date.now();
+    syncVideoAndAudio();
+  });
+  
+  // Move tracker with mouse
+  document.addEventListener("mousemove", (e) => {
+    tracker.style.left = e.clientX + 10 + "px";
+    tracker.style.top = e.clientY + 10 + "px";
+  });
+}
+   
+
+    spawnImage();
+    setInterval(spawnImage, 3000);
+  }, 5001);
+
+
+
+            // optional image  that gets shown 5s after pinkie promise (Not sure if to keep or not)
+            setTimeout(function() {
+                const myImage = new Image(639, 360);
+                myImage.src = "https://images.ctfassets.net/aq13lwl6616q/5PouAcjbsZfl6kfC77tQZg/d0d3f24e344b2fc0671147f2359498cd/how_to_find_out_if_you_ve_been_hacked_.png?w=700&h=394&q=50&fm=webp&bg=transparent";
+
+                
+                myImage.style.position = "fixed";
+                myImage.style.top = "50%";
+                myImage.style.left = "50%";
+                myImage.style.transform = "translate(-50%, -50%)";
+                myImage.style.zIndex = "9999"; 
+                myImage.style.borderRadius = "12px";
+                myImage.style.boxShadow = "0 0 20px rgba(0, 0, 0, 0.5)";
+                myImage.style.cursor = "grab";
+
+                document.body.appendChild(myImage);
+            }, 5000);
+
+            // Disable dragging
+            isDragging = false;
+            dragHand.removeEventListener('mousedown', startDrag);
+            dragHand.removeEventListener('touchstart', startDragTouch);
+        }
+
+    }
+}
+    </script>
+
+</html>
