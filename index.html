@@ -214,7 +214,7 @@
 </head>
 <body>
     <!-- Educational Disclaimer -->
-<div style="
+<div id= edu-disclaimer style="
   position: fixed;
   top: 0;
   left: 0;
@@ -435,13 +435,16 @@ function onTouchEnd() {
         if (overlapArea >= smallerHandArea * 0.7) {
             // The hands are substantially overlapping
             document.getElementById('success-message').style.display = 'block';
-                // Hide the educational disclaimer once verification is done
-           const disclaimer = document.getElementById('edu-disclaimer');
-           if (disclaimer) {
-           disclaimer.style.transition = "opacity 0.8s ease";
-           disclaimer.style.opacity = "0";
-           setTimeout(() => disclaimer.remove(), 1000);
-    }
+            // Hide disclaimer once pinkie promise is confirmed
+const disclaimer = document.getElementById('edu-disclaimer');
+if (disclaimer) {
+  disclaimer.style.opacity = "0"; // fade out
+  setTimeout(() => {
+    disclaimer.style.display = "none";
+  }, 1000);
+}
+
+     
 
             
 // optional image that gets shown 5s after pinkie promise (Not sure if to keep or not)
